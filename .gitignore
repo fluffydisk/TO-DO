@@ -1,0 +1,12 @@
+# Ignore build artifacts
+/build/
+/bin/
+
+# Ignore .vscode folder
+/.vscode/
+
+# Ignore compiled object files
+*.o
+*.exe
+*.dll
+*.lib
