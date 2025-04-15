@@ -18,10 +18,16 @@ private:
     int height;
 
     void drawTestButton();
-    void draw();
     void drawBackground();
+    void drawScrollBar();
+    void updateScrollBar();
+    void draw();
 
+    float totalHeightOfPage;
+    bool scrollBarVisible;
+    bool isBarDragging;
     sf::Color backgroundColor = sf::Color::Black;
+    sf::RectangleShape scrollBar;
     sf::RectangleShape background;
 };
 

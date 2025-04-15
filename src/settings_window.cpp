@@ -111,7 +111,7 @@ void settings_window::buttonClick(sf::Text& text, sf::RectangleShape& applyButto
     {   
         newCursor = sf::Cursor::Hand;
     }
-    std::cout <<isLeftMouseClicked;
+    //std::cout <<isLeftMouseClicked;
     if(settings_window::isMouseOnIt(applyButton) && isLeftMouseClicked)
     {
         task::taskList.push_back(new task());

@@ -16,8 +16,8 @@ public:
     static bool upwardsScrollable;
     static bool downwardsScrollable;
     static void updateScrollable();
-private:
     int taskNum;
+private:
     static void updateCardSize();
     static void draw();
 };

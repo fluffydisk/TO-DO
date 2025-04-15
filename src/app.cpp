@@ -5,6 +5,12 @@
 app::app()
 {
     utils::init();
+    /*
+    for(int i=0; i < 7; i++)
+    {
+        task::taskList.push_back(new task());
+    }
+    */
 }
 
 app::~app()

@@ -27,7 +27,7 @@ void utils::updateScreenSize()
     windowSize = window.getSize();
     
     utils::seperationPointMaxX = utils::windowSize.x/2;
-    utils::seperationPointMinX = utils::windowSize.x/8;
+    utils::seperationPointMinX = utils::windowSize.x/6;
     if(utils::seperationPointCurrentX>utils::seperationPointMaxX)
     {
         utils::seperationPointCurrentX=utils::seperationPointMaxX;
