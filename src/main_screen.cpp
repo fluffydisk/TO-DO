@@ -2,9 +2,11 @@
 #include "../include/task.hpp"
 #include <iostream>
 
+bool main_screen::isBarDragging = false;
+
 main_screen::main_screen()
-    :scrollBarVisible(false),
-     isBarDragging(false)
+    :scrollBarVisible(false)
+
 {
 
 }
@@ -52,22 +54,27 @@ void main_screen::updateScrollBar()
     {
         scrollBarVisible = true;
     }
-
-    if(utils::isMouseOnIt(scrollBar) && utils::mouseLeftClicked && utils::window.hasFocus())
+    static bool dragOffsetFirstIteration = true;
+    if(utils::isMouseOnIt(scrollBar) && !seperating_bar::isDragging && utils::mouseLeftClicked && utils::window.hasFocus())
     {
-        dragOffset = utils::mousePos.y - scrollBar.getPosition().y;
         isBarDragging = true;
+        if(dragOffsetFirstIteration)
+        {
+            dragOffset = utils::mousePos.y - scrollBar.getPosition().y;
+            dragOffsetFirstIteration = false;
+        }
     }
     if(!utils::mouseLeftClicked)
     {
+        dragOffsetFirstIteration = true;
         isBarDragging = false;
     }
-    //std::cout << isBarDragging << std::endl;
+    // std::cout << isBarDragging << std::endl;
     if(isBarDragging)
     {
         static float newY;
         newY = utils::mousePos.y - dragOffset;
-        newY = std::clamp(newY, 0.1f, utils::windowSize.y - scrollBar.getSize().y);
+        newY = std::clamp(newY, 0.f, utils::windowSize.y - scrollBar.getSize().y);
         scrollBar.setPosition(scrollBar.getPosition().x, newY);
         task::scrollNum = newY * totalHeightOfPage/utils::windowSize.y;
     }

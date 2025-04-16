@@ -48,7 +48,7 @@ class seperating_bar
 public:
     seperating_bar(sf::Vector2f _size, sf::Vector2f _position);
     ~seperating_bar();
-    bool isDragging;
+    static bool isDragging;
     void draw();
     sf::RectangleShape rectangle;
 private:

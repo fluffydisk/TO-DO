@@ -65,19 +65,19 @@ void task::updateCardSize()
         float x = utils::seperationPointCurrentX + 10;
         float y = 10;
     
+        /*
         float width = mainScreenWidth / 2 - 20;
         float height = mainScreenHeight / 3 - 20;
         task->card.setSize(sf::Vector2f(width, height));
         float xpos = x + (index % 2) * (width + 10);
         float ypos = y + (index / 2) * (height + 10);
         task->card.setPosition(sf::Vector2f(xpos, ypos - scrollNum));
-        
-        ++index;
-
-        //Optional version of drawing new created tasks 
-        /*if (s_TotalTaskNum == 1)
-        {
-            // Full width, full height
+        */
+       
+       //Optional version of drawing new created tasks 
+       if (s_TotalTaskNum == 1)
+       {
+           // Full width, full height
             task->card.setSize(sf::Vector2f(mainScreenWidth - 20, mainScreenHeight - 20));
             task->card.setPosition(sf::Vector2f(x, y - scrollNum));
         }
@@ -108,7 +108,8 @@ void task::updateCardSize()
             float xpos = x + (index % 2) * (width + 10);
             float ypos = y + (index / 2) * (height + 10);
             task->card.setPosition(sf::Vector2f(xpos, ypos- scrollNum));
-        }*/
+        }
+        ++index;
     }
 }
 

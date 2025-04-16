@@ -94,7 +94,7 @@ void settings_bar::checkMouseInteractions()
     sf::Cursor::Type newCursor = sf::Cursor::Arrow;
 
     // Start dragging
-    if (utils::isMouseOnIt(seperatingBar->rectangle) && utils::mouseLeftClicked && utils::window.hasFocus()) 
+    if (utils::isMouseOnIt(seperatingBar->rectangle) && !main_screen::isBarDragging && utils::mouseLeftClicked && utils::window.hasFocus()) 
     {
         seperatingBar->isDragging = true;
     }
@@ -112,12 +112,12 @@ void settings_bar::checkMouseInteractions()
         utils::seperationPointCurrentX = std::clamp(utils::mousePos.x, utils::seperationPointMinX, utils::seperationPointMaxX);
     }
     // Handle test button hover
-    else if (testButton1->isMouseOnIt() || testButton2->isMouseOnIt() || testButton3->isMouseOnIt()) 
+    else if ((testButton1->isMouseOnIt() || testButton2->isMouseOnIt() || testButton3->isMouseOnIt()) && !main_screen::isBarDragging) 
     {   
         newCursor = sf::Cursor::Hand;
     }
     // Handle normal hover
-    else if (utils::isMouseOnIt(seperatingBar->rectangle) && utils::window.hasFocus()) 
+    else if (utils::isMouseOnIt(seperatingBar->rectangle) && utils::window.hasFocus() && !seperating_bar::isDragging && !main_screen::isBarDragging) 
     {
         newCursor = sf::Cursor::SizeHorizontal;
     }
@@ -201,7 +201,7 @@ bool button::isMouseOnIt()
 
 bool button::isClicked(bool seperatingBarIsDragging)
 {
-    return isMouseOnIt() && utils::mouseLeftClicked && !seperatingBarIsDragging;
+    return isMouseOnIt() && utils::mouseLeftClicked && !seperatingBarIsDragging && !main_screen::isBarDragging;
 }
 
 
@@ -209,9 +209,10 @@ bool button::isClicked(bool seperatingBarIsDragging)
 
 //SEPERATING_BAR CLASS
 
+bool seperating_bar::isDragging = false;
+
 seperating_bar::seperating_bar(sf::Vector2f _size, sf::Vector2f _position)
-    :   rectangle(_size),
-        isDragging(false)
+    :   rectangle(_size)
         {
             rectangle.setPosition(_position);
         }
