@@ -13,6 +13,7 @@ public:
     void update();
     
     static bool isBarDragging;
+    static bool scrollBarVisible;
 private:
 
     int x;
@@ -26,7 +27,6 @@ private:
     void draw();
 
     float totalHeightOfPage;
-    bool scrollBarVisible;
     sf::Color backgroundColor = sf::Color::Black;
     sf::RectangleShape scrollBar;
     sf::RectangleShape background;

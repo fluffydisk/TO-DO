@@ -3,10 +3,9 @@
 #include <iostream>
 
 bool main_screen::isBarDragging = false;
+bool main_screen::scrollBarVisible = false;
 
 main_screen::main_screen()
-    :scrollBarVisible(false)
-
 {
 
 }
@@ -38,51 +37,101 @@ void main_screen::drawBackground()
     utils::window.draw(background);
 }
 
-
+//CHATGPT
+///---
 void main_screen::updateScrollBar()
 {
     totalHeightOfPage = 10;
-    static float dragOffset;
-    for(auto &task : task::taskList)
+    const auto taskCount = static_cast<int>(task::taskList.size());
+
+    int rows = 1;
+    int tasksPerRow = 1;
+    float taskHeight = 0;
+
+    switch (settings_window::tasksShown)
     {
-        if(task->taskNum%2!=0)
+        case settings_window::Tasks_shown::ONE:
+            rows = taskCount;
+            tasksPerRow = 1;
+            taskHeight = utils::windowSize.y - 20;
+            break;
+        case settings_window::Tasks_shown::TWO:
+            tasksPerRow = 2;
+            taskHeight = utils::windowSize.y - 20;
+            rows = (taskCount + 1) / 2;
+            break;
+        case settings_window::Tasks_shown::FOUR:
+            tasksPerRow = 2;
+            taskHeight = utils::windowSize.y / 2 - 20;
+            rows = (taskCount + 1) / 2;
+            break;
+        case settings_window::Tasks_shown::SIX:
+            tasksPerRow = 2;
+            taskHeight = utils::windowSize.y / 3 - 20;
+            rows = (taskCount + 1) / 2;
+            break;
+        case settings_window::Tasks_shown::RESIZABLE:
         {
-            totalHeightOfPage += utils::windowSize.y / 3 - 20 + 10;
+            if (taskCount == 1)
+            {
+                rows = 1;
+                taskHeight = utils::windowSize.y - 20;
+            }
+            else if (taskCount == 2)
+            {
+                tasksPerRow = 2;
+                rows = 1;
+                taskHeight = utils::windowSize.y - 20;
+            }
+            else if (taskCount <= 4)
+            {
+                tasksPerRow = 2;
+                rows = (taskCount + 1) / 2;
+                taskHeight = utils::windowSize.y / 2 - 20;
+            }
+            else
+            {
+                tasksPerRow = 2;
+                rows = (taskCount + 1) / 2;
+                taskHeight = utils::windowSize.y / 3 - 20;
+            }
+            break;
         }
     }
-    if(task::s_TotalTaskNum>6)
-    {
-        scrollBarVisible = true;
-    }
+
+    totalHeightOfPage += rows * (taskHeight + 10);
+
+    // --- ScrollBar Dragging Logic ---
+    static float dragOffset = 0.f;
     static bool dragOffsetFirstIteration = true;
-    if(utils::isMouseOnIt(scrollBar) && !seperating_bar::isDragging && utils::mouseLeftClicked && utils::window.hasFocus())
+
+    if (utils::isMouseOnIt(scrollBar) && !seperating_bar::isDragging && utils::mouseLeftClicked && utils::window.hasFocus())
     {
         isBarDragging = true;
-        if(dragOffsetFirstIteration)
+        if (dragOffsetFirstIteration)
         {
             dragOffset = utils::mousePos.y - scrollBar.getPosition().y;
             dragOffsetFirstIteration = false;
         }
     }
-    if(!utils::mouseLeftClicked)
+
+    if (!utils::mouseLeftClicked)
     {
         dragOffsetFirstIteration = true;
         isBarDragging = false;
     }
-    // std::cout << isBarDragging << std::endl;
-    if(isBarDragging)
+
+    if (isBarDragging)
     {
-        static float newY;
-        newY = utils::mousePos.y - dragOffset;
+        float newY = utils::mousePos.y - dragOffset;
         newY = std::clamp(newY, 0.f, utils::windowSize.y - scrollBar.getSize().y);
         scrollBar.setPosition(scrollBar.getPosition().x, newY);
-        task::scrollNum = newY * totalHeightOfPage/utils::windowSize.y;
+        task::scrollNum = (newY / (utils::windowSize.y - scrollBar.getSize().y)) * (totalHeightOfPage - utils::windowSize.y);
     }
-    if(task::scrollNum<0)
-    {
-        task::scrollNum=0;
-    } 
+
+    task::scrollNum = std::clamp(task::scrollNum, 0, INT_MAX); // Clamp to non-negative
 }
+
 
 void main_screen::drawScrollBar()
 {

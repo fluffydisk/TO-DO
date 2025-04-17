@@ -1,6 +1,8 @@
 #include "../include/settings_window.hpp"
 #include "../include/task.hpp"
 
+settings_window::Tasks_shown settings_window::tasksShown = Tasks_shown::SIX;
+
 settings_window::settings_window()
     :window(sf::VideoMode(480, 430), "Settings", sf::Style::Titlebar | sf::Style::Close),
     isSettingsWindowActive(false),
@@ -11,7 +13,7 @@ settings_window::settings_window()
 
 settings_window::~settings_window(){}
 
-void settings_window::draw_AddTask()
+void settings_window::update_AddTask()
 {
     static int space = 20;
     
@@ -91,10 +93,70 @@ void settings_window::draw_AddTask()
     
 }
 
-void settings_window::draw_Settings()
+void settings_window::update_Settings()
 {
-    static sf::Font font; font.loadFromFile("../res/Fonts/SFPRODISPLAYBOLD.OTF");
     static sf::Vector2u windowSize;
+    
+    static sf::Font font;
+
+    static sf::RectangleShape onePerPage;
+    static sf::Text oneText;
+
+    static sf::RectangleShape twoPerPage;
+    static sf::Text twoText;
+
+    static sf::RectangleShape fourPerPage;
+    static sf::Text fourText;
+
+    static sf::RectangleShape sixPerPage;
+    static sf::Text sixText;
+
+    static sf::RectangleShape resizablePerPage;
+    static sf::Text resizableText;
+
+    static bool isHoveringAny;
+    isHoveringAny = isMouseOnIt(onePerPage) || isMouseOnIt(twoPerPage) || isMouseOnIt(fourPerPage) || isMouseOnIt(sixPerPage) || isMouseOnIt(resizablePerPage);
+    mouseCursor.loadFromSystem(isHoveringAny ? sf::Cursor::Type::Hand : sf::Cursor::Type::Arrow);
+    window.setMouseCursor(mouseCursor);
+
+
+    if(isLeftMouseClicked)
+    {
+        if(isMouseOnIt(onePerPage))
+        {
+            tasksShown=Tasks_shown::ONE;
+            isSettingsWindowActive=false;
+            task::scrollNum = 0;
+        }
+        else if(isMouseOnIt(twoPerPage))
+        {
+            tasksShown=Tasks_shown::TWO;
+            isSettingsWindowActive=false;
+            task::scrollNum = 0;
+        }
+        else if(isMouseOnIt(fourPerPage))
+        {
+            tasksShown=Tasks_shown::FOUR;
+            isSettingsWindowActive=false;
+            task::scrollNum = 0;
+        }
+        else if(isMouseOnIt(sixPerPage))
+        {
+            tasksShown=Tasks_shown::SIX;
+            isSettingsWindowActive=false;
+            task::scrollNum = 0;
+        }
+        else if(isMouseOnIt(resizablePerPage))
+        {
+            tasksShown=Tasks_shown::RESIZABLE;
+            isSettingsWindowActive=false;
+            task::scrollNum = 0;
+        }
+    }
+
+    //Draw
+    font.loadFromFile("../res/Fonts/SFPRODISPLAYBOLD.OTF");
+    
     windowSize = window.getSize();
     int xSpaceBetweenCarts = 10;
     int ySpaceBetweenCarts = 10;
@@ -104,29 +166,50 @@ void settings_window::draw_Settings()
     mainText.setPosition(45, 20);
     window.draw(mainText);
 
-    static sf::RectangleShape onePerPage; onePerPage.setPosition(sf::Vector2f(xSpaceBetweenCarts*2 ,80)); onePerPage.setFillColor(sf::Color(40, 40, 40));
+    onePerPage.setPosition(sf::Vector2f(xSpaceBetweenCarts*2 ,80)); onePerPage.setFillColor(isMouseOnIt(onePerPage) ? sf::Color(40, 40, 40)   : sf::Color(20, 20, 20));
     onePerPage.setSize(sf::Vector2f((windowSize.x-(5*xSpaceBetweenCarts))/2, (windowSize.y-(2*ySpaceBetweenCarts))/9*2));
     window.draw(onePerPage);
+    oneText.setFillColor(sf::Color::White); oneText.setFont(font); 
+    oneText.setString("One Task Per Page"); oneText.setCharacterSize(18);
+    oneText.setPosition(onePerPage.getPosition().x+25, onePerPage.getPosition().y+30);
+    window.draw(oneText);
 
-    static sf::RectangleShape twoPerPage; twoPerPage.setPosition(sf::Vector2f(3*xSpaceBetweenCarts+onePerPage.getSize().x ,80)); twoPerPage.setFillColor(sf::Color(40, 40, 40));
+
+    twoPerPage.setPosition(sf::Vector2f(3*xSpaceBetweenCarts+onePerPage.getSize().x ,80)); twoPerPage.setFillColor(isMouseOnIt(twoPerPage) ? sf::Color(40, 40, 40)   : sf::Color(20, 20, 20));
     twoPerPage.setSize(sf::Vector2f((windowSize.x-(5*xSpaceBetweenCarts))/2, (windowSize.y-(2*ySpaceBetweenCarts))/9*2));
     window.draw(twoPerPage);
+    twoText.setFillColor(sf::Color::White); twoText.setFont(font); 
+    twoText.setString("Two Task Per Page"); twoText.setCharacterSize(18);
+    twoText.setPosition(twoPerPage.getPosition().x+25, twoPerPage.getPosition().y+30);
+    window.draw(twoText);
 
-    static sf::RectangleShape fourPerPage; fourPerPage.setPosition(sf::Vector2f(xSpaceBetweenCarts*2 ,onePerPage.getPosition().y+onePerPage.getSize().y+ySpaceBetweenCarts)); fourPerPage.setFillColor(sf::Color(40, 40, 40));
+    fourPerPage.setPosition(sf::Vector2f(xSpaceBetweenCarts*2 ,onePerPage.getPosition().y+onePerPage.getSize().y+ySpaceBetweenCarts)); fourPerPage.setFillColor(isMouseOnIt(fourPerPage) ? sf::Color(40, 40, 40)   : sf::Color(20, 20, 20));
     fourPerPage.setSize(sf::Vector2f((windowSize.x-(5*xSpaceBetweenCarts))/2, (windowSize.y-(2*ySpaceBetweenCarts))/9*2));
     window.draw(fourPerPage);
+    fourText.setFillColor(sf::Color::White); fourText.setFont(font); 
+    fourText.setString("Four Task Per Page"); fourText.setCharacterSize(18);
+    fourText.setPosition(fourPerPage.getPosition().x+25, fourPerPage.getPosition().y+30);
+    window.draw(fourText);
 
-    static sf::RectangleShape sixPerPage; sixPerPage.setPosition(sf::Vector2f(xSpaceBetweenCarts+fourPerPage.getSize().x +fourPerPage.getPosition().x ,twoPerPage.getPosition().y+twoPerPage.getSize().y+ySpaceBetweenCarts)); sixPerPage.setFillColor(sf::Color(40, 40, 40));
+    sixPerPage.setPosition(sf::Vector2f(xSpaceBetweenCarts+fourPerPage.getSize().x +fourPerPage.getPosition().x ,twoPerPage.getPosition().y+twoPerPage.getSize().y+ySpaceBetweenCarts)); sixPerPage.setFillColor((isMouseOnIt(sixPerPage) ? sf::Color(40, 40, 40)   : sf::Color(20, 20, 20)));
     sixPerPage.setSize(sf::Vector2f((windowSize.x-(5*xSpaceBetweenCarts))/2, (windowSize.y-(2*ySpaceBetweenCarts))/9*2));
     window.draw(sixPerPage);
+    sixText.setFillColor(sf::Color::White); sixText.setFont(font); 
+    sixText.setString("Six Task Per Page"); sixText.setCharacterSize(18);
+    sixText.setPosition(sixPerPage.getPosition().x+25, sixPerPage.getPosition().y+30);
+    window.draw(sixText);
 
-    static sf::RectangleShape repositionablePerPage; repositionablePerPage.setPosition(sf::Vector2f(xSpaceBetweenCarts*2, sixPerPage.getPosition().y+sixPerPage.getSize().y+ySpaceBetweenCarts)); repositionablePerPage.setFillColor(sf::Color(40, 40, 40));
-    repositionablePerPage.setSize(sf::Vector2f((windowSize.x-(4*xSpaceBetweenCarts)), (windowSize.y-(2*ySpaceBetweenCarts))/9));
-    window.draw(repositionablePerPage);
+    resizablePerPage.setPosition(sf::Vector2f(xSpaceBetweenCarts*2, sixPerPage.getPosition().y+sixPerPage.getSize().y+ySpaceBetweenCarts)); resizablePerPage.setFillColor(isMouseOnIt(resizablePerPage) ? sf::Color(40, 40, 40)   : sf::Color(20, 20, 20));
+    resizablePerPage.setSize(sf::Vector2f((windowSize.x-(4*xSpaceBetweenCarts)), (windowSize.y-(2*ySpaceBetweenCarts))/9));
+    window.draw(resizablePerPage);
+    resizableText.setFillColor(sf::Color::White); resizableText.setFont(font); 
+    resizableText.setString("Resize as number of tasks"); resizableText.setCharacterSize(18);
+    resizableText.setPosition(resizablePerPage.getPosition().x+100, resizablePerPage.getPosition().y+12);
+    window.draw(resizableText);
 }
 
-void settings_window::draw_EditTask(){}
-void settings_window::draw_RemoveTask(){}
+void settings_window::update_EditTask(){}
+void settings_window::update_RemoveTask(){}
 
 bool settings_window::isMouseOnIt(sf::RectangleShape obj)
 {
@@ -189,16 +272,16 @@ void settings_window::update()
         switch (screenData)
         {
         case Screen_data::ADD_TASK :
-            draw_AddTask();
+            update_AddTask();
             break;
         case Screen_data::REMOVE_TASK :
-            draw_RemoveTask();
+            update_RemoveTask();
             break;
         case Screen_data::EDIT_TASK :
-            draw_EditTask();
+            update_EditTask();
             break;
         case Screen_data::SETTINGS:
-            draw_Settings();
+            update_Settings();
             break;
         default:
             break;

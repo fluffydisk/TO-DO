@@ -5,7 +5,7 @@
 class settings_window
 {
 public:
-    enum class Screen_data : char{ADD_TASK, REMOVE_TASK, EDIT_TASK, SETTINGS};
+    enum class Screen_data{ADD_TASK, REMOVE_TASK, EDIT_TASK, SETTINGS};
     Screen_data screenData;
 
     settings_window();
@@ -13,13 +13,15 @@ public:
     
     void update();
 
-    void draw_AddTask();
-    void draw_RemoveTask();
-    void draw_EditTask();
-    void draw_Settings();
+    void update_AddTask();
+    void update_RemoveTask();
+    void update_EditTask();
+    void update_Settings();
 
     bool isSettingsWindowActive;
     bool isMouseOnIt(sf::RectangleShape obj);
+    enum class Tasks_shown{ONE, TWO, FOUR, SIX, RESIZABLE};
+    static Tasks_shown tasksShown;
 private:
     bool isLeftMouseClicked;
     sf::Cursor mouseCursor;

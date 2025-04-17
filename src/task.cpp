@@ -31,11 +31,23 @@ void task::updateScrollable()
 
     upwardsScrollable = true;
     downwardsScrollable = true;
-    
-    if (s_TotalTaskNum < 6)
+    main_screen::scrollBarVisible = true;
+
+    static int totalHeight = 0;
+    if(taskList.size() != 0)
+    {
+        totalHeight = s_TotalTaskNum*(taskList.back()->card.getSize().y + 10) + 10;
+    }
+    else
+    {
+        totalHeight = 0;    
+    }
+
+    if (totalHeight<mainScreenHeight)
     {
         upwardsScrollable = false;
         downwardsScrollable = false;
+        main_screen::scrollBarVisible = false;
     }
     else if (taskList[0]->card.getPosition().y >= 10)
     {
@@ -58,57 +70,52 @@ void task::updateCardSize()
     mainScreenWidth=utils::windowSize.x - utils::seperationPointCurrentX;
 
 
-
+    //CHATGPT
+    ///---
     int index = 0;
-    for (auto& task : taskList)
-    {
-        float x = utils::seperationPointCurrentX + 10;
-        float y = 10;
+    int columns = 1;
+    int rows = 1;
+    float width = mainScreenWidth - 20;
+    float height = mainScreenHeight - 20;
     
-        /*
-        float width = mainScreenWidth / 2 - 20;
-        float height = mainScreenHeight / 3 - 20;
+    if (settings_window::tasksShown == settings_window::Tasks_shown::TWO || 
+        (settings_window::tasksShown == settings_window::Tasks_shown::RESIZABLE && s_TotalTaskNum == 2)) {
+        columns = 2; rows = 1;
+        width = mainScreenWidth / 2 - 20;
+        height = mainScreenHeight - 20;
+    }
+    else if (settings_window::tasksShown == settings_window::Tasks_shown::FOUR || 
+            (settings_window::tasksShown == settings_window::Tasks_shown::RESIZABLE && s_TotalTaskNum <= 4)) {
+        columns = 2; rows = 2;
+        width = mainScreenWidth / 2 - 20;
+        height = mainScreenHeight / 2 - 20;
+    }
+    else if (settings_window::tasksShown == settings_window::Tasks_shown::SIX || 
+            (settings_window::tasksShown == settings_window::Tasks_shown::RESIZABLE && s_TotalTaskNum > 4)) {
+        columns = 2; rows = 3;
+        width = mainScreenWidth / 2 - 20;
+        height = mainScreenHeight / 3 - 20;
+    }
+    // ONE and RESIZABLE with 1 task (fallback/default)
+    else {
+        columns = 1; rows = 1;
+        width = mainScreenWidth - 30;
+        height = mainScreenHeight - 20;
+    }
+    
+    float x = utils::seperationPointCurrentX + 10;
+    float y = 10;
+    
+    for (auto& task : taskList) {
+        int col = index % columns;
+        int row = index / columns;
+    
+        float xpos = x + col * (width + 10);
+        float ypos = y + row * (height + 10) - scrollNum;
+    
         task->card.setSize(sf::Vector2f(width, height));
-        float xpos = x + (index % 2) * (width + 10);
-        float ypos = y + (index / 2) * (height + 10);
-        task->card.setPosition(sf::Vector2f(xpos, ypos - scrollNum));
-        */
-       
-       //Optional version of drawing new created tasks 
-       if (s_TotalTaskNum == 1)
-       {
-           // Full width, full height
-            task->card.setSize(sf::Vector2f(mainScreenWidth - 20, mainScreenHeight - 20));
-            task->card.setPosition(sf::Vector2f(x, y - scrollNum));
-        }
-        else if (s_TotalTaskNum == 2)
-        {
-            // Two vertical cards
-            float height = mainScreenHeight - 20;
-            float width = mainScreenWidth / 2 - 20;
-            task->card.setSize(sf::Vector2f(width, height));
-            task->card.setPosition(sf::Vector2f(x + index * (width + 10), y - scrollNum));
-        }
-        else if (s_TotalTaskNum <= 4)
-        {
-            // 2x2 grid
-            float width = mainScreenWidth / 2 - 20;
-            float height = mainScreenHeight / 2 - 20;
-            task->card.setSize(sf::Vector2f(width, height));
-            float xpos = x + (index % 2) * (width + 10);
-            float ypos = y + (index / 2) * (height + 10);
-            task->card.setPosition(sf::Vector2f(xpos, ypos - scrollNum));
-        }
-        else
-        {
-            // 2x3 grid
-            float width = mainScreenWidth / 2 - 20;
-            float height = mainScreenHeight / 3 - 20;
-            task->card.setSize(sf::Vector2f(width, height));
-            float xpos = x + (index % 2) * (width + 10);
-            float ypos = y + (index / 2) * (height + 10);
-            task->card.setPosition(sf::Vector2f(xpos, ypos- scrollNum));
-        }
+        task->card.setPosition(sf::Vector2f(xpos, ypos));
+    
         ++index;
     }
 }
