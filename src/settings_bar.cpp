@@ -12,6 +12,7 @@ settings_bar::settings_bar()
     testButton1 = new button(sf::Vector2f(width-20, 30),sf::Vector2f(width-20, 40), "Add Task");
     testButton2 = new button(sf::Vector2f(width-20, 30),sf::Vector2f(width-20, 80), "Edit Task");
     testButton3 = new button(sf::Vector2f(width-20, 30),sf::Vector2f(width-20, 120), "Remove Task");
+    settingsButtonRect = new sf::RectangleShape(sf::Vector2f(width-20, 30));
     seperatingBar = new seperating_bar(sf::Vector2f(width-20, 30),sf::Vector2f(width-20, 120));
     settingsWindow = new settings_window();
 }
@@ -21,6 +22,7 @@ settings_bar::~settings_bar()
     delete testButton1;
     delete testButton2;
     delete testButton3;
+    delete settingsButtonRect;
     delete seperatingBar;
     delete settingsWindow;
 }
@@ -38,8 +40,25 @@ void settings_bar::update()
 
     updateButtons();
     settingsWindow->update();
+    updateSettingsButton();
 
     draw();
+}
+
+void settings_bar::updateSettingsButton()
+{
+    static sf::Texture img;
+    static size_t width_img;
+    width_img = 40;
+    img.loadFromFile("../res/Images/setting.png");
+
+    if(width/3 < width_img)
+    {
+        width_img = width/3;
+    }
+    settingsButtonRect->setTexture(&img);
+    settingsButtonRect->setPosition(20, height-width_img-20);
+    settingsButtonRect->setSize(sf::Vector2f(width_img, width_img));
 }
 
 void settings_bar::addTaskButton()
@@ -52,6 +71,20 @@ void settings_bar::addTaskButton()
             settingsWindow->screenData = settings_window::Screen_data::ADD_TASK;
 
 
+        }
+    }
+}
+
+void settings_bar::settingsButton()
+{
+    static bool isClicked;
+    if(!settingsWindow->isSettingsWindowActive)
+    {
+        isClicked =utils::isMouseOnIt(*settingsButtonRect) && utils::mouseLeftClicked && !seperating_bar::isDragging && !main_screen::isBarDragging; 
+        if(isClicked)
+        {
+            settingsWindow->isSettingsWindowActive=true;
+            settingsWindow->screenData = settings_window::Screen_data::SETTINGS;
         }
     }
 }
@@ -85,6 +118,7 @@ void settings_bar::updateButtons()
     addTaskButton();
     editTaskButton();
     removeTaskButton();
+    settingsButton();
 }
 
 
@@ -112,7 +146,7 @@ void settings_bar::checkMouseInteractions()
         utils::seperationPointCurrentX = std::clamp(utils::mousePos.x, utils::seperationPointMinX, utils::seperationPointMaxX);
     }
     // Handle test button hover
-    else if ((testButton1->isMouseOnIt() || testButton2->isMouseOnIt() || testButton3->isMouseOnIt()) && !main_screen::isBarDragging) 
+    else if ((utils::isMouseOnIt(testButton1->rectangle) || utils::isMouseOnIt(testButton2->rectangle) || utils::isMouseOnIt(testButton3->rectangle) || utils::isMouseOnIt(*settingsButtonRect)) && !main_screen::isBarDragging) 
     {   
         newCursor = sf::Cursor::Hand;
     }
@@ -149,6 +183,7 @@ void settings_bar::draw()
     testButton1->draw(width, x+10);
     testButton2->draw(width, x+10);
     testButton3->draw(width, x+10);
+    utils::window.draw(*settingsButtonRect);
 }
 
 //BUTTON CLASS
@@ -175,7 +210,7 @@ button::~button(){}
 void button::draw(int settingsBarWidth, int settingsBarX)
 {
     buttonColor = sf::Color(13,13,13);
-    if(this->isMouseOnIt())
+    if(utils::isMouseOnIt(this->rectangle))
     {
         buttonColor = sf::Color(21,21,21);
     }
@@ -191,17 +226,9 @@ void button::draw(int settingsBarWidth, int settingsBarX)
     utils::window.draw(taskText);
 }
 
-bool button::isMouseOnIt()
-{
-    return (utils::mousePos.x > this->rectangle.getPosition().x &&
-    utils::mousePos.x < this->rectangle.getPosition().x + this->rectangle.getSize().x &&
-    utils::mousePos.y > this->rectangle.getPosition().y &&
-    utils::mousePos.y < this->rectangle.getPosition().y + this->rectangle.getSize().y);
-}
-
 bool button::isClicked(bool seperatingBarIsDragging)
 {
-    return isMouseOnIt() && utils::mouseLeftClicked && !seperatingBarIsDragging && !main_screen::isBarDragging;
+    return utils::isMouseOnIt(this->rectangle) && utils::mouseLeftClicked && !seperatingBarIsDragging && !main_screen::isBarDragging;
 }
 
 

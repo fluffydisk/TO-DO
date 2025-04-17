@@ -24,6 +24,7 @@ private:
     int height;
 
     void updateButtons();
+    void settingsButton();
     void addTaskButton();
     void editTaskButton();
     void removeTaskButton();
@@ -39,8 +40,11 @@ private:
     button* testButton1;
     button* testButton2;
     button* testButton3;
+    sf::RectangleShape* settingsButtonRect;
     seperating_bar* seperatingBar;
     settings_window* settingsWindow;
+
+    void updateSettingsButton();
 };
 
 class seperating_bar
@@ -62,8 +66,8 @@ public:
     ~button();
 
     void draw(int settingsBarWidth, int settingsBarX);
-    bool isMouseOnIt();
     bool isClicked(bool seperatingBarIsDragging);
+    sf::RectangleShape rectangle;
     
 private:   
 
@@ -72,7 +76,6 @@ private:
     sf::Text taskText;
 
     int savedWidth;
-    sf::RectangleShape rectangle;
 };
 
 

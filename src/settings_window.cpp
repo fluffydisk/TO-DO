@@ -91,6 +91,40 @@ void settings_window::draw_AddTask()
     
 }
 
+void settings_window::draw_Settings()
+{
+    static sf::Font font; font.loadFromFile("../res/Fonts/SFPRODISPLAYBOLD.OTF");
+    static sf::Vector2u windowSize;
+    windowSize = window.getSize();
+    int xSpaceBetweenCarts = 10;
+    int ySpaceBetweenCarts = 10;
+
+    static sf::Text mainText; mainText.setFillColor(sf::Color::White);
+    mainText.setFont(font); mainText.setString("Choose how tasks should be shown"); mainText.setCharacterSize(24);
+    mainText.setPosition(45, 20);
+    window.draw(mainText);
+
+    static sf::RectangleShape onePerPage; onePerPage.setPosition(sf::Vector2f(xSpaceBetweenCarts*2 ,80)); onePerPage.setFillColor(sf::Color(40, 40, 40));
+    onePerPage.setSize(sf::Vector2f((windowSize.x-(5*xSpaceBetweenCarts))/2, (windowSize.y-(2*ySpaceBetweenCarts))/9*2));
+    window.draw(onePerPage);
+
+    static sf::RectangleShape twoPerPage; twoPerPage.setPosition(sf::Vector2f(3*xSpaceBetweenCarts+onePerPage.getSize().x ,80)); twoPerPage.setFillColor(sf::Color(40, 40, 40));
+    twoPerPage.setSize(sf::Vector2f((windowSize.x-(5*xSpaceBetweenCarts))/2, (windowSize.y-(2*ySpaceBetweenCarts))/9*2));
+    window.draw(twoPerPage);
+
+    static sf::RectangleShape fourPerPage; fourPerPage.setPosition(sf::Vector2f(xSpaceBetweenCarts*2 ,onePerPage.getPosition().y+onePerPage.getSize().y+ySpaceBetweenCarts)); fourPerPage.setFillColor(sf::Color(40, 40, 40));
+    fourPerPage.setSize(sf::Vector2f((windowSize.x-(5*xSpaceBetweenCarts))/2, (windowSize.y-(2*ySpaceBetweenCarts))/9*2));
+    window.draw(fourPerPage);
+
+    static sf::RectangleShape sixPerPage; sixPerPage.setPosition(sf::Vector2f(xSpaceBetweenCarts+fourPerPage.getSize().x +fourPerPage.getPosition().x ,twoPerPage.getPosition().y+twoPerPage.getSize().y+ySpaceBetweenCarts)); sixPerPage.setFillColor(sf::Color(40, 40, 40));
+    sixPerPage.setSize(sf::Vector2f((windowSize.x-(5*xSpaceBetweenCarts))/2, (windowSize.y-(2*ySpaceBetweenCarts))/9*2));
+    window.draw(sixPerPage);
+
+    static sf::RectangleShape repositionablePerPage; repositionablePerPage.setPosition(sf::Vector2f(xSpaceBetweenCarts*2, sixPerPage.getPosition().y+sixPerPage.getSize().y+ySpaceBetweenCarts)); repositionablePerPage.setFillColor(sf::Color(40, 40, 40));
+    repositionablePerPage.setSize(sf::Vector2f((windowSize.x-(4*xSpaceBetweenCarts)), (windowSize.y-(2*ySpaceBetweenCarts))/9));
+    window.draw(repositionablePerPage);
+}
+
 void settings_window::draw_EditTask(){}
 void settings_window::draw_RemoveTask(){}
 
@@ -149,8 +183,8 @@ void settings_window::update()
                 }
             }
         }
-
         window.clear(sf::Color(11, 11, 11));
+
 
         switch (screenData)
         {
@@ -162,6 +196,9 @@ void settings_window::update()
             break;
         case Screen_data::EDIT_TASK :
             draw_EditTask();
+            break;
+        case Screen_data::SETTINGS:
+            draw_Settings();
             break;
         default:
             break;
