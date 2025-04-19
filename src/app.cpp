@@ -49,6 +49,7 @@ void app::run()
                 else if(utils::event.mouseWheelScroll.delta < 0 && task::downwardsScrollable)
                 {
                     task::scrollNum+=30;
+                    std::cout << task::scrollNum<<std::endl;
                 }
             }
             if(utils::event.type == sf::Event::MouseButtonPressed)

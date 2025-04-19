@@ -42,7 +42,6 @@ void task::updateScrollable()
     {
         totalHeight = 0;    
     }
-
     if (totalHeight<mainScreenHeight)
     {
         upwardsScrollable = false;
@@ -52,13 +51,12 @@ void task::updateScrollable()
     else if (taskList[0]->card.getPosition().y >= 10)
     {
         upwardsScrollable = false;
-        taskList[0]->card.setPosition(utils::seperationPointCurrentX + 10, 10);
     }
     else if (taskList.back()->card.getPosition().y + taskList.back()->card.getSize().y  <= mainScreenHeight - 10)
     {
         downwardsScrollable = false;
-        taskList.back()->card.setPosition(utils::seperationPointCurrentX + 10 + mainScreenWidth / 2 - 20, taskList.back()->card.getPosition().y);
     }
+    //std::cout << totalHeight << " " << mainScreenHeight << " "<< upwardsScrollable << " " << downwardsScrollable << std::endl;
 }
 
 void task::updateCardSize()
