@@ -1,5 +1,15 @@
 #include "../include/settings_window.hpp"
 #include "../include/task.hpp"
+#include <unistd.h> 
+#if defined(_WIN32)
+    #include <Windows.h>
+#elif defined(__linux__)
+    #define XLIB_ILLEGAL_ACCESS
+    extern "C" {
+        #include <X11/Xlib.h>
+        #include <X11/Xutil.h>
+    }
+#endif
 
 settings_window::Tasks_shown settings_window::tasksShown = Tasks_shown::SIX;
 
@@ -12,6 +22,62 @@ settings_window::settings_window()
     }
 
 settings_window::~settings_window(){}
+
+
+//Chatgpt
+void settings_window::setForeground()
+{
+    isSettingsWindowActive = true;
+    window.setActive(true);
+    
+    #if defined(_WIN32)
+        HWND hwnd = static_cast<HWND>(window.getSystemHandle());
+        SetForegroundWindow(hwnd);
+
+    #elif defined(__linux__)
+        Display* display = XOpenDisplay(NULL);
+        if (!display) return;
+
+        Window win = static_cast<Window>(window.getSystemHandle());
+
+        // Check if the window is already mapped and viewable
+        XWindowAttributes attributes;
+        if (XGetWindowAttributes(display, win, &attributes)) {
+            if (attributes.map_state != IsViewable) {
+                std::cerr << "Window not viewable, mapping now...\n";
+                XMapWindow(display, win);  // Ensure the window is mapped
+                XFlush(display);           // Ensure changes take effect
+                usleep(100000);             // Small delay (10ms) to ensure window is ready
+            }
+
+            // Raise the window to the foreground
+            XRaiseWindow(display, win);
+            XFlush(display);  // Flush any outstanding requests
+
+            // Now set the input focus
+            if (attributes.map_state == IsViewable) {
+                int result = XSetInputFocus(display, win, RevertToParent, CurrentTime);
+                if (result == BadMatch) {
+                    std::cerr << "XSetInputFocus failed with BadMatch. Possibly not the right window.\n";
+                } else {
+                    std::cerr << "Focus set to the window.\n";
+                }
+            } else {
+                std::cerr << "Window is still not viewable after mapping, cannot set focus.\n";
+            }
+        } else {
+            std::cerr << "Failed to get window attributes.\n";
+        }
+
+        XCloseDisplay(display);
+    #endif
+}
+
+void settings_window::setWindowActive()
+{
+    window.requestFocus();
+    setForeground();
+}
 
 void settings_window::update_AddTask()
 {
@@ -245,7 +311,6 @@ void settings_window::buttonClick(sf::Text& text, sf::RectangleShape& applyButto
 
 void settings_window::update()
 {
-    
     window.setVisible(isSettingsWindowActive);
     if (isSettingsWindowActive)
     {

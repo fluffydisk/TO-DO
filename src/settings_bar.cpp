@@ -67,7 +67,7 @@ void settings_bar::addTaskButton()
     {
         if(testButton1->isClicked(seperatingBar->isDragging))
         {
-            settingsWindow->isSettingsWindowActive=true;
+            settingsWindow->setWindowActive();
             settingsWindow->screenData = settings_window::Screen_data::ADD_TASK;
 
 
@@ -83,7 +83,7 @@ void settings_bar::settingsButton()
         isClicked =utils::isMouseOnIt(*settingsButtonRect) && utils::mouseLeftClicked && !seperating_bar::isDragging && !main_screen::isBarDragging; 
         if(isClicked)
         {
-            settingsWindow->isSettingsWindowActive=true;
+            settingsWindow->setWindowActive();
             settingsWindow->screenData = settings_window::Screen_data::SETTINGS;
         }
     }
@@ -95,7 +95,7 @@ void settings_bar::editTaskButton()
     {
         if(testButton2->isClicked(seperatingBar->isDragging))
         {
-            settingsWindow->isSettingsWindowActive=true;
+            settingsWindow->setWindowActive();
             settingsWindow->screenData = settings_window::Screen_data::EDIT_TASK;
         }
     }
@@ -107,7 +107,7 @@ void settings_bar::removeTaskButton()
     {
         if(testButton3->isClicked(seperatingBar->isDragging))
         {
-            settingsWindow->isSettingsWindowActive=true;
+            settingsWindow->setWindowActive();
             settingsWindow->screenData = settings_window::Screen_data::REMOVE_TASK;
         }
     }

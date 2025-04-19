@@ -129,7 +129,7 @@ void main_screen::updateScrollBar()
         task::scrollNum = (newY / (utils::windowSize.y - scrollBar.getSize().y)) * (totalHeightOfPage - utils::windowSize.y);
     }
 
-    task::scrollNum = std::clamp(task::scrollNum, 0, INT_MAX); // Clamp to non-negative
+    task::scrollNum = std::min(task::scrollNum, 0); // Clamp to non-negative
 }
 
 

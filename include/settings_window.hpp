@@ -19,15 +19,18 @@ public:
     void update_Settings();
 
     bool isSettingsWindowActive;
+    void setWindowActive();
     bool isMouseOnIt(sf::RectangleShape obj);
     enum class Tasks_shown{ONE, TWO, FOUR, SIX, RESIZABLE};
     static Tasks_shown tasksShown;
-private:
+
+    private:
+    void setForeground();
     bool isLeftMouseClicked;
     sf::Cursor mouseCursor;
     sf::Vector2i mousePos;
-
     sf::RenderWindow window;
+
     sf::Event event;
     void buttonClick(sf::Text& text, sf::RectangleShape& applyButton);
 };

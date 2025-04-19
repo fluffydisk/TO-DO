@@ -19,6 +19,7 @@ app::~app()
 
 void app::run()
 {
+    
     while (utils::window.isOpen())
     {   
         task::updateScrollable();
@@ -38,6 +39,7 @@ void app::run()
                 utils::updateScreenSize();
 
             }
+            
             if(utils::event.type == sf::Event::MouseWheelScrolled)
             {
                 if(utils::event.mouseWheelScroll.delta > 0 && task::upwardsScrollable)
