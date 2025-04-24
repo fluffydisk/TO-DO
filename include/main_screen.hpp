@@ -20,7 +20,6 @@ private:
     int width;
     int height;
 
-    void drawTestButton();
     void drawBackground();
     void drawScrollBar();
     void updateScrollBar();

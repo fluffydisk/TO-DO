@@ -47,8 +47,8 @@ void utils::update()
     updateScreenSize();
 
 
-    settingsBar.update();
     mainScreen.update();
+    settingsBar.update();
     
     mousePos = sf::Mouse::getPosition(window);
 }

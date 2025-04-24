@@ -179,11 +179,11 @@ void settings_bar::draw()
 {
     drawBackground();
 
-    seperatingBar->draw();
     testButton1->draw(width, x+10);
     testButton2->draw(width, x+10);
     testButton3->draw(width, x+10);
     utils::window.draw(*settingsButtonRect);
+    seperatingBar->draw();
 }
 
 //BUTTON CLASS
@@ -235,7 +235,7 @@ bool button::isClicked(bool seperatingBarIsDragging)
 
 
 //SEPERATING_BAR CLASS
-
+int seperating_bar::width = 2;
 bool seperating_bar::isDragging = false;
 
 seperating_bar::seperating_bar(sf::Vector2f _size, sf::Vector2f _position)
@@ -249,7 +249,8 @@ seperating_bar::~seperating_bar(){}
 
 void seperating_bar::draw()
 {
-    this->rectangle.setSize(sf::Vector2f(4, utils::windowSize.y));
+    //std::cout <<" sepBar X = " << rectangle.getPosition().x + rectangle.getSize().x  << std::endl;
+    this->rectangle.setSize(sf::Vector2f(width, utils::windowSize.y));
     this->rectangle.setPosition(sf::Vector2f(utils::seperationPointCurrentX - this->rectangle.getSize().x/2, 0));
     this->rectangle.setFillColor(sf::Color::White);
     utils::window.draw(this->rectangle);

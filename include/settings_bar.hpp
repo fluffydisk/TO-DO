@@ -55,6 +55,7 @@ public:
     static bool isDragging;
     void draw();
     sf::RectangleShape rectangle;
+    static int width;
 private:
 };
 

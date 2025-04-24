@@ -18,7 +18,7 @@ void main_screen::updateSize()
 {
     width = utils::windowSize.x - utils::seperationPointCurrentX;
     height = utils::window.getSize().y;
-    x = utils::seperationPointCurrentX;
+    x = utils::seperationPointCurrentX + seperating_bar::width;
 }  
 
 void main_screen::update()
@@ -156,7 +156,7 @@ void main_screen::draw()
 {
     drawBackground();
     drawScrollBar();
-
+    //std::cout << " Main Screen X: "<<  background.getPosition().x;
     //drawTestButton();
 }
 

@@ -24,7 +24,13 @@ public:
     enum class Tasks_shown{ONE, TWO, FOUR, SIX, RESIZABLE};
     static Tasks_shown tasksShown;
 
-    private:
+private:
+    void handleWriting(sf::RectangleShape& rect1, sf::RectangleShape& rect2);
+    std::string str_TaskName;
+    bool isActive_FirstWritingBar;
+
+    sf::Font font;
+
     void setForeground();
     bool isLeftMouseClicked;
     sf::Cursor mouseCursor;

@@ -16,9 +16,15 @@ settings_window::Tasks_shown settings_window::tasksShown = Tasks_shown::SIX;
 settings_window::settings_window()
     :window(sf::VideoMode(480, 430), "Settings", sf::Style::Titlebar | sf::Style::Close),
     isSettingsWindowActive(false),
-    isLeftMouseClicked(false)
+    isLeftMouseClicked(false),
+    isActive_FirstWritingBar(false)
     {
         window.setVisible(isSettingsWindowActive);
+
+        if(!font.loadFromFile("../res/Fonts/SFPRODISPLAYREGULAR.OTF"))
+        {
+            std::cout << "couldnt load file";
+        }
     }
 
 settings_window::~settings_window(){}
@@ -44,7 +50,7 @@ void settings_window::setForeground()
         XWindowAttributes attributes;
         if (XGetWindowAttributes(display, win, &attributes)) {
             if (attributes.map_state != IsViewable) {
-                std::cerr << "Window not viewable, mapping now...\n";
+                //std::cerr << "Window not viewable, mapping now...\n";
                 XMapWindow(display, win);  // Ensure the window is mapped
                 XFlush(display);           // Ensure changes take effect
                 usleep(100000);             // Small delay (10ms) to ensure window is ready
@@ -58,15 +64,15 @@ void settings_window::setForeground()
             if (attributes.map_state == IsViewable) {
                 int result = XSetInputFocus(display, win, RevertToParent, CurrentTime);
                 if (result == BadMatch) {
-                    std::cerr << "XSetInputFocus failed with BadMatch. Possibly not the right window.\n";
+                    //std::cerr << "XSetInputFocus failed with BadMatch. Possibly not the right window.\n";
                 } else {
-                    std::cerr << "Focus set to the window.\n";
+                    //std::cerr << "Focus set to the window.\n";
                 }
             } else {
-                std::cerr << "Window is still not viewable after mapping, cannot set focus.\n";
+                //std::cerr << "Window is still not viewable after mapping, cannot set focus.\n";
             }
         } else {
-            std::cerr << "Failed to get window attributes.\n";
+            //std::cerr << "Failed to get window attributes.\n";
         }
 
         XCloseDisplay(display);
@@ -79,29 +85,45 @@ void settings_window::setWindowActive()
     setForeground();
 }
 
+void settings_window::handleWriting(sf::RectangleShape& rect1, sf::RectangleShape& rect2)
+{
+    static int spaceX_FirstWritingBar = 10;
+    static int spaceY_FirstWritingBar = 10;
+    static sf::RectangleShape firstSpaceWritingBar;
+    firstSpaceWritingBar.setSize(sf::Vector2f(1, 20)); firstSpaceWritingBar.setFillColor(sf::Color::White);
+    firstSpaceWritingBar.setPosition(sf::Vector2f(rect1.getPosition().x + spaceX_FirstWritingBar, rect1.getPosition().y + spaceY_FirstWritingBar));
+
+    if(isMouseOnIt(rect1) && isLeftMouseClicked)
+    {
+        isActive_FirstWritingBar = true;
+    }
+    else if(isLeftMouseClicked)
+    {
+        isActive_FirstWritingBar = false;
+    }
+
+    if(isActive_FirstWritingBar)
+    {
+        window.draw(firstSpaceWritingBar);
+    }
+
+    static sf::Text taskName;
+
+    taskName.setFont(font);
+    taskName.setPosition(sf::Vector2f(rect1.getPosition().x + spaceX_FirstWritingBar, rect1.getPosition().y + spaceY_FirstWritingBar));
+    taskName.setCharacterSize(24);
+    taskName.setFillColor(sf::Color::White);
+    taskName.setString(str_TaskName);
+
+    window.draw(taskName);
+}
+
 void settings_window::update_AddTask()
 {
     static int space = 20;
     
-    static sf::Font font;
 
-    if(!font.loadFromFile("../res/Fonts/SFPRODISPLAYREGULAR.OTF"))
-    {
-        std::cout << "couldnt load file";
-    }
     
-    /*
-    static sf::Text addTaskText;
-    addTaskText.setFont(font);
-    addTaskText.setString("Add Task");
-    addTaskText.setStyle(sf::Text::Bold);
-    addTaskText.setCharacterSize(24);
-    
-    addTaskText.setFillColor(sf::Color::White);
-    addTaskText.setPosition(sf::Vector2f(window.getSize().x/3+20, 5));
-
-    window.draw(addTaskText);
-    */
 
     static sf::Text firstSpaceText;
 
@@ -156,7 +178,8 @@ void settings_window::update_AddTask()
     buttonClick(applyText, applyButton);
 
     window.draw(applyText);
-    
+
+    handleWriting(firstSpaceEntry, secondSpaceEntry);    
 }
 
 void settings_window::update_Settings()
@@ -328,6 +351,23 @@ void settings_window::update()
                 if(event.mouseButton.button == sf::Mouse::Button::Left)
                 {
                     isLeftMouseClicked = true;
+                }
+            }
+            if(isActive_FirstWritingBar)
+            {
+                if(event.type == sf::Event::TextEntered)
+                {
+                    if(event.text.unicode == 8)
+                    {
+                        if(str_TaskName.size()>0)
+                        {
+                            str_TaskName.pop_back();
+                        }
+                    }
+                    else
+                    {
+                        str_TaskName+=(char)event.text.unicode;
+                    }
                 }
             }
         }
