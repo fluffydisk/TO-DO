@@ -26,8 +26,16 @@ public:
 
 private:
     void handleWriting(sf::RectangleShape& rect1, sf::RectangleShape& rect2);
-    std::string str_TaskName;
     bool isActive_FirstWritingBar;
+
+
+    struct s_TaskName
+    {
+        std::string str_Text;
+        sf::Text sf_Text;
+        static std::vector<s_TaskName*> list;
+    };
+    
 
     sf::Font font;
 

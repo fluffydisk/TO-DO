@@ -11,6 +11,9 @@
     }
 #endif
 
+
+std::vector<settings_window::s_TaskName*> settings_window::s_TaskName::list;
+
 settings_window::Tasks_shown settings_window::tasksShown = Tasks_shown::SIX;
 
 settings_window::settings_window()
@@ -27,7 +30,13 @@ settings_window::settings_window()
         }
     }
 
-settings_window::~settings_window(){}
+settings_window::~settings_window()
+{
+    for(auto &text : s_TaskName::list)
+    {
+        delete text;
+    }
+}
 
 
 //Chatgpt
@@ -107,22 +116,29 @@ void settings_window::handleWriting(sf::RectangleShape& rect1, sf::RectangleShap
         window.draw(firstSpaceWritingBar);
     }
 
-    static sf::Text taskName;
-
-    taskName.setFont(font);
-    taskName.setPosition(sf::Vector2f(rect1.getPosition().x + spaceX_FirstWritingBar, rect1.getPosition().y + spaceY_FirstWritingBar));
-    taskName.setCharacterSize(24);
-    taskName.setFillColor(sf::Color::White);
-    taskName.setString(str_TaskName);
-
-    window.draw(taskName);
+    //std::cout << str_TaskName->size()<<std::endl;
+    //TODO: add shouldGoToBottomColumn bool to the if operator
+    if(s_TaskName::list.size()==0 || (s_TaskName::list.back()->sf_Text.getGlobalBounds().width + s_TaskName::list.back()->sf_Text.getGlobalBounds().getPosition().x  > rect1.getSize().x + rect1.getPosition().x))
+    {
+        s_TaskName::list.push_back(new s_TaskName());
+        s_TaskName::list.back()->sf_Text.setFillColor(sf::Color::White);
+        s_TaskName::list.back()->sf_Text.setFont(font);
+        s_TaskName::list.back()->sf_Text.setPosition(s_TaskName::list.size()>1 ? 
+        sf::Vector2f(s_TaskName::list[s_TaskName::list.size()-2]->sf_Text.getPosition().x,
+        s_TaskName::list[s_TaskName::list.size()-2]->sf_Text.getPosition().y+20) :
+        sf::Vector2f(rect1.getPosition().x+20, rect1.getPosition().y+20));
+    }
+    
+    for(auto &taskRender : s_TaskName::list)
+    {
+        taskRender->sf_Text.setString(taskRender->str_Text);
+        window.draw(taskRender->sf_Text);
+    }
 }
 
 void settings_window::update_AddTask()
 {
     static int space = 20;
-    
-
     
 
     static sf::Text firstSpaceText;
@@ -352,21 +368,35 @@ void settings_window::update()
                 {
                     isLeftMouseClicked = true;
                 }
+                
             }
             if(isActive_FirstWritingBar)
             {
+                std::cout<< s_TaskName::list.size() << " "<< s_TaskName::list.back()->str_Text;
+                for(auto &j : s_TaskName::list)
+                {   
+                    std::cout<<" "<<j->str_Text<<" ";
+                }
+                std::cout << "\n";
                 if(event.type == sf::Event::TextEntered)
                 {
                     if(event.text.unicode == 8)
                     {
-                        if(str_TaskName.size()>0)
+                        if(s_TaskName::list.back()->str_Text.length()>0)
                         {
-                            str_TaskName.pop_back();
+                            s_TaskName::list.back()->str_Text.pop_back();
+                            if(s_TaskName::list.back()->str_Text.length()==0)
+                            {
+                                s_TaskName::list.back() = nullptr;
+                                s_TaskName::list.pop_back();
+                                std::cout <<"REMOVED: " << s_TaskName::list.size()<<std::endl;
+                            }
                         }
                     }
                     else
                     {
-                        str_TaskName+=(char)event.text.unicode;
+                        s_TaskName::list.back()->str_Text+=(char)event.text.unicode;
+                        //std::cout << s_TaskName::list.size() << std::endl;
                     }
                 }
             }
