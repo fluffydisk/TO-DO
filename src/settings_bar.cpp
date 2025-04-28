@@ -41,7 +41,6 @@ void settings_bar::update()
     updateButtons();
     settingsWindow->update();
     updateSettingsButton();
-
     draw();
 }
 
@@ -69,8 +68,6 @@ void settings_bar::addTaskButton()
         {
             settingsWindow->setWindowActive();
             settingsWindow->screenData = settings_window::Screen_data::ADD_TASK;
-
-
         }
     }
 }

@@ -24,18 +24,32 @@ public:
     enum class Tasks_shown{ONE, TWO, FOUR, SIX, RESIZABLE};
     static Tasks_shown tasksShown;
 
+
 private:
     void handleWriting(sf::RectangleShape& rect1, sf::RectangleShape& rect2);
     bool isActive_FirstWritingBar;
 
-
-    struct s_TaskName
+    struct TaskName
     {
         std::string str_Text;
         sf::Text sf_Text;
-        static std::vector<s_TaskName*> list;
-    };
-    
+        static bool shouldGoToUnderRow;
+        static std::vector<TaskName*> list;
+
+    private:
+        size_t index;
+        
+    public:
+        TaskName()
+        {
+            index = list.size();
+            
+            list.push_back(this);
+        }
+        size_t getIndex() const{return index;};
+        TaskName* previousObj() const{return index>0 ? list[index-1] : nullptr;};
+
+    };    
 
     sf::Font font;
 

@@ -1,6 +1,7 @@
 #include "../include/settings_window.hpp"
 #include "../include/task.hpp"
 #include <unistd.h> 
+
 #if defined(_WIN32)
     #include <Windows.h>
 #elif defined(__linux__)
@@ -12,7 +13,8 @@
 #endif
 
 
-std::vector<settings_window::s_TaskName*> settings_window::s_TaskName::list;
+std::vector<settings_window::TaskName*> settings_window::TaskName::list;
+bool settings_window::TaskName::shouldGoToUnderRow = false;
 
 settings_window::Tasks_shown settings_window::tasksShown = Tasks_shown::SIX;
 
@@ -32,7 +34,7 @@ settings_window::settings_window()
 
 settings_window::~settings_window()
 {
-    for(auto &text : s_TaskName::list)
+    for(auto &text : TaskName::list)
     {
         delete text;
     }
@@ -96,6 +98,7 @@ void settings_window::setWindowActive()
 
 void settings_window::handleWriting(sf::RectangleShape& rect1, sf::RectangleShape& rect2)
 {
+    std::cout<<"Did that crash0 ?? :";
     static int spaceX_FirstWritingBar = 10;
     static int spaceY_FirstWritingBar = 10;
     static sf::RectangleShape firstSpaceWritingBar;
@@ -118,23 +121,33 @@ void settings_window::handleWriting(sf::RectangleShape& rect1, sf::RectangleShap
 
     //std::cout << str_TaskName->size()<<std::endl;
     //TODO: add shouldGoToBottomColumn bool to the if operator
-    if(s_TaskName::list.size()==0 || (s_TaskName::list.back()->sf_Text.getGlobalBounds().width + s_TaskName::list.back()->sf_Text.getGlobalBounds().getPosition().x  > rect1.getSize().x + rect1.getPosition().x))
+    if(TaskName::list.size()==0)
     {
-        s_TaskName::list.push_back(new s_TaskName());
-        s_TaskName::list.back()->sf_Text.setFillColor(sf::Color::White);
-        s_TaskName::list.back()->sf_Text.setFont(font);
-        s_TaskName::list.back()->sf_Text.setPosition(s_TaskName::list.size()>1 ? 
-        sf::Vector2f(s_TaskName::list[s_TaskName::list.size()-2]->sf_Text.getPosition().x,
-        s_TaskName::list[s_TaskName::list.size()-2]->sf_Text.getPosition().y+20) :
-        sf::Vector2f(rect1.getPosition().x+20, rect1.getPosition().y+20));
+        TaskName* newObj = new TaskName();        
+        newObj->sf_Text.setFillColor(sf::Color::White);
+        newObj->sf_Text.setFont(font);
+        newObj->sf_Text.setPosition(sf::Vector2f(rect1.getPosition().x+5, rect1.getPosition().y+5));
+        std::cout<<"Did that crash1 ?? :" <<newObj->getIndex();
+        delete newObj;
+    }
+    else if(TaskName::shouldGoToUnderRow)
+    {
+        TaskName* newObj = new TaskName();        
+        newObj->sf_Text.setFillColor(sf::Color::White);
+        newObj->sf_Text.setFont(font);
+        newObj->sf_Text.setPosition(sf::Vector2f(newObj->previousObj()->sf_Text.getPosition().x,
+        newObj->previousObj()->sf_Text.getPosition().y+20));
+
+        delete newObj;
     }
     
-    for(auto &taskRender : s_TaskName::list)
+    for(auto &taskRender : TaskName::list)
     {
         taskRender->sf_Text.setString(taskRender->str_Text);
         window.draw(taskRender->sf_Text);
     }
 }
+
 
 void settings_window::update_AddTask()
 {
@@ -353,6 +366,7 @@ void settings_window::update()
     window.setVisible(isSettingsWindowActive);
     if (isSettingsWindowActive)
     {
+        std::cout<<"Did that crash5 ?? :";
         mousePos = sf::Mouse::getPosition(window);
         while (window.pollEvent(event))
         {
@@ -372,8 +386,8 @@ void settings_window::update()
             }
             if(isActive_FirstWritingBar)
             {
-                std::cout<< s_TaskName::list.size() << " "<< s_TaskName::list.back()->str_Text;
-                for(auto &j : s_TaskName::list)
+                std::cout<< TaskName::list.size() << " "<< TaskName::list.back()->str_Text;
+                for(auto &j : TaskName::list)
                 {   
                     std::cout<<" "<<j->str_Text<<" ";
                 }
@@ -382,20 +396,20 @@ void settings_window::update()
                 {
                     if(event.text.unicode == 8)
                     {
-                        if(s_TaskName::list.back()->str_Text.length()>0)
+                        if(TaskName::list.back()->str_Text.length()>0)
                         {
-                            s_TaskName::list.back()->str_Text.pop_back();
-                            if(s_TaskName::list.back()->str_Text.length()==0)
+                            TaskName::list.back()->str_Text.pop_back();
+                            if(TaskName::list.back()->str_Text.length()==0)
                             {
-                                s_TaskName::list.back() = nullptr;
-                                s_TaskName::list.pop_back();
-                                std::cout <<"REMOVED: " << s_TaskName::list.size()<<std::endl;
+                                TaskName::list.back() = nullptr;
+                                TaskName::list.pop_back();
+                                std::cout <<"REMOVED: " << TaskName::list.size()<<std::endl;
                             }
                         }
                     }
                     else
                     {
-                        s_TaskName::list.back()->str_Text+=(char)event.text.unicode;
+                        TaskName::list.back()->str_Text+=(char)event.text.unicode;
                         //std::cout << s_TaskName::list.size() << std::endl;
                     }
                 }
